@@ -12,7 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BluePrint">
         <activity
-            android:name=".MainActivity"
+            android:name="com.uth.gestionusuarios.activities.DetalleUsuarioActivity"
+            android:exported="false" />
+        <activity
+            android:name="com.uth.gestionusuarios.activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
