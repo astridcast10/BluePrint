@@ -218,6 +218,7 @@
             android:layout_marginEnd="8dp"
             android:text="LIMPIAR"
             android:textColor="@color/blue_primary"
+            app:cornerRadius="4dp"
             app:strokeColor="@color/blue_primary"
             app:icon="@android:drawable/ic_menu_close_clear_cancel"
             app:iconTint="@color/blue_primary" />
@@ -229,6 +230,7 @@
             android:layout_weight="1.5"
             android:text="GUARDAR"
             android:backgroundTint="@color/blue_primary"
+            app:cornerRadius="4dp"
             app:icon="@android:drawable/ic_menu_save"
             app:iconTint="@android:color/white" />
 

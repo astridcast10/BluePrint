@@ -235,6 +235,7 @@
             android:layout_marginEnd="6dp"
             android:text="ELIMINAR"
             android:textColor="#D32F2F"
+            app:cornerRadius="4dp"
             app:strokeColor="#D32F2F"
             app:icon="@android:drawable/ic_menu_delete"
             app:iconTint="#D32F2F" />
@@ -247,6 +248,7 @@
             android:layout_marginStart="6dp"
             android:text="ACTUALIZAR"
             android:backgroundTint="@color/blue_primary"
+            app:cornerRadius="4dp"
             app:icon="@android:drawable/ic_menu_save"
             app:iconTint="@android:color/white" />
 
