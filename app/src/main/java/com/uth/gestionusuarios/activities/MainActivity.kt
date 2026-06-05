@@ -236,7 +236,7 @@ class MainActivity : AppCompatActivity() {
     ) {
 
         tvContador.text =
-            "Usuarios ($cantidad)"
+            "Clientes"
 
         tvMostrando.text =
             "Mostrando $cantidad de ${usuarios.size}"

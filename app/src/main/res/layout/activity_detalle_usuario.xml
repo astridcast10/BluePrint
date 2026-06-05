@@ -12,9 +12,9 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#673AB7"
+        android:background="@color/blue_primary"
         android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-        app:title="Modificar Usuario"
+        app:title="Detalle Cliente"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -68,7 +68,7 @@
                         android:src="@android:drawable/ic_menu_camera"
                         app:fabCustomSize="36dp"
                         app:maxImageSize="18dp"
-                        app:backgroundTint="#673AB7"
+                        app:backgroundTint="@color/blue_primary"
                         app:tint="@android:color/white" />
                 </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -78,6 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="2dp"
                 app:strokeWidth="1dp"
@@ -115,8 +116,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:hint="Nombre completo"
-                        app:boxStrokeColor="#673AB7"
-                        app:hintTextColor="#673AB7">
+                        app:boxStrokeColor="@color/blue_primary"
+                        app:hintTextColor="@color/blue_primary">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etNombre"
@@ -133,8 +134,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Edad"
-                        app:boxStrokeColor="#673AB7"
-                        app:hintTextColor="#673AB7">
+                        app:boxStrokeColor="@color/blue_primary"
+                        app:hintTextColor="@color/blue_primary">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEdad"
@@ -151,8 +152,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Correo electrónico"
-                        app:boxStrokeColor="#673AB7"
-                        app:hintTextColor="#673AB7">
+                        app:boxStrokeColor="@color/blue_primary"
+                        app:hintTextColor="@color/blue_primary">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEmail"
@@ -169,8 +170,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Teléfono"
-                        app:boxStrokeColor="#673AB7"
-                        app:hintTextColor="#673AB7">
+                        app:boxStrokeColor="@color/blue_primary"
+                        app:hintTextColor="@color/blue_primary">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etTelefono"
@@ -245,7 +246,7 @@
             android:layout_weight="1.5"
             android:layout_marginStart="6dp"
             android:text="ACTUALIZAR"
-            android:backgroundTint="#673AB7"
+            android:backgroundTint="@color/blue_primary"
             app:icon="@android:drawable/ic_menu_save"
             app:iconTint="@android:color/white" />
 

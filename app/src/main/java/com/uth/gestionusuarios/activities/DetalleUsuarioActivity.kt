@@ -107,13 +107,21 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener { finish() }
 
         // Hint "Nombre *" con asterisco rojo
-        val hint = SpannableString("Nombre completo *")
-        hint.setSpan(
+        val hintNombre = SpannableString("Nombre completo *")
+        hintNombre.setSpan(
             ForegroundColorSpan(0xFFD32F2F.toInt()),
             16, 17,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
-        tilNombre.hint = hint
+        tilNombre.hint = hintNombre
+
+        val hintEdad = SpannableString("Edad *")
+        hintEdad.setSpan(
+            ForegroundColorSpan(0xFFD32F2F.toInt()),
+            5, 6,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        tilEdad.hint = hintEdad
 
         // Cámara / galería
         fabCamera.setOnClickListener { mostrarDialogoFoto() }

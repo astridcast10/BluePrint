@@ -14,10 +14,10 @@
             android:id="@+id/tvToolbar"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:background="#5E35D6"
+            android:background="@color/blue_primary"
             android:gravity="center_vertical"
             android:paddingStart="20dp"
-            android:text="GestionUsuarios"
+            android:text="Gestion De Clientes"
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -28,7 +28,7 @@
             android:layout_height="48dp"
             android:layout_margin="16dp"
             android:background="@android:drawable/edit_text"
-            android:hint="Buscar usuario..."
+            android:hint="Buscar Cliente..."
             android:paddingStart="16dp"
             android:textColor="#111111"
             android:textColorHint="#777777" />
@@ -45,7 +45,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Usuarios (0)"
+                android:text="Clientes"
                 android:textColor="#111111"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -89,7 +89,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="24dp"
         android:contentDescription="Agregar usuario"
-        app:backgroundTint="#5E35D6"
+        app:backgroundTint="@color/blue_primary"
         app:fabSize="normal"
         app:srcCompat="@android:drawable/ic_input_add"
         app:tint="#FFFFFF" />
