@@ -1,6 +1,8 @@
 package com.uth.gestionusuarios.adapters
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +39,20 @@ class UsuarioAdapter(
         tvCorreo.text = usuario.correo ?: "Sin correo"
         tvTelefono.text = usuario.telefono ?: "Sin teléfono"
 
-        imgUsuario.setImageResource(android.R.drawable.ic_menu_myplaces)
+        if (!usuario.fotoBase64.isNullOrEmpty()) {
+            try {
+                val imageBytes = Base64.decode(usuario.fotoBase64, Base64.DEFAULT)
+                val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                imgUsuario.setImageBitmap(decodedImage)
+                imgUsuario.setPadding(0, 0, 0, 0)
+            } catch (e: Exception) {
+                imgUsuario.setImageResource(android.R.drawable.sym_def_app_icon)
+                imgUsuario.setPadding(6, 6, 6, 6)
+            }
+        } else {
+            imgUsuario.setImageResource(android.R.drawable.sym_def_app_icon)
+            imgUsuario.setPadding(6, 6, 6, 6)
+        }
 
         return view
     }

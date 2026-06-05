@@ -4,13 +4,14 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextWatcher
 import android.text.style.ForegroundColorSpan
 import android.util.Base64
 import android.widget.ImageView
@@ -28,10 +29,9 @@ import com.uth.gestionusuarios.BD.UsuariosDB
 import com.uth.gestionusuarios.models.Usuario
 import java.io.ByteArrayOutputStream
 
-class DetalleUsuarioActivity : AppCompatActivity() {
+class GuardarUsuarioActivity : AppCompatActivity() {
 
     private lateinit var imgAvatar: ImageView
-    private lateinit var etId: TextInputEditText
     private lateinit var etNombre: TextInputEditText
     private lateinit var etEdad: TextInputEditText
     private lateinit var etEmail: TextInputEditText
@@ -41,10 +41,6 @@ class DetalleUsuarioActivity : AppCompatActivity() {
     private lateinit var tilEmail: TextInputLayout
     private lateinit var tilTelefono: TextInputLayout
 
-    private lateinit var usuariosDB: UsuariosDB
-    private var idUsuario: Int = 0
-
-    // Launcher galería
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -56,7 +52,6 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         }
     }
 
-    // Launcher cámara
     private val cameraLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -68,7 +63,6 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         }
     }
 
-    // Launcher permiso cámara
     private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
@@ -77,19 +71,14 @@ class DetalleUsuarioActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_detalle_usuario)
+        setContentView(R.layout.activity_guardar_usuario)
 
-        usuariosDB = UsuariosDB(this)
-        idUsuario = intent.getIntExtra(MainActivity.EXTRA_ID_USUARIO, 0)
-
-        // Referencias
         val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         val fabCamera = findViewById<FloatingActionButton>(R.id.fabCamera)
+        val btnClean = findViewById<MaterialButton>(R.id.btnClean)
         val btnSave = findViewById<MaterialButton>(R.id.btnSave)
-        val btnDelete = findViewById<MaterialButton>(R.id.btnDelete)
 
         imgAvatar  = findViewById(R.id.imgAvatar)
-        etId       = findViewById(R.id.etId)
         etNombre   = findViewById(R.id.etNombre)
         etEdad     = findViewById(R.id.etEdad)
         etEmail    = findViewById(R.id.etEmail)
@@ -99,14 +88,11 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         tilEmail   = findViewById(R.id.tilEmail)
         tilTelefono = findViewById(R.id.tilTelefono)
 
-        cargarDatosUsuario()
-
-        // Botón regresar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener { finish() }
 
-        // Hint "Nombre *" con asterisco rojo
+        // Asterisco rojo en el hint
         val hint = SpannableString("Nombre completo *")
         hint.setSpan(
             ForegroundColorSpan(0xFFD32F2F.toInt()),
@@ -115,47 +101,55 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         )
         tilNombre.hint = hint
 
-        // Cámara / galería
+        configurarFormatoTelefono()
         fabCamera.setOnClickListener { mostrarDialogoFoto() }
-
-        // Guardar (Actualizar)
+        btnClean.setOnClickListener { limpiarCampos() }
+        
         btnSave.setOnClickListener {
-            if (!validarCampos()) return@setOnClickListener
+            if (validarCampos()) {
+                val nombre = etNombre.text.toString().trim()
+                val edad = etEdad.text.toString().toIntOrNull() ?: 0
+                
+                var email = etEmail.text.toString().trim()
+                if (email.isEmpty()) email = "N/A"
+                
+                var telefono = etTelefono.text.toString().trim()
+                if (telefono.isEmpty()) telefono = "N/A"
+                
+                val fotoBase64 = imagenToBase64()
 
-            val id = etId.text?.toString()?.toIntOrNull() ?: 0
-            val nombre = etNombre.text?.toString()?.trim() ?: ""
-            val edad = etEdad.text?.toString()?.toIntOrNull() ?: 0
-            
-            var email = etEmail.text?.toString()?.trim() ?: ""
-            if (email.isEmpty()) email = "N/A"
-            
-            var telefono = etTelefono.text?.toString()?.trim() ?: ""
-            if (telefono.isEmpty()) telefono = "N/A"
+                val nuevoUsuario = Usuario(0, nombre, email, telefono, edad, fotoBase64)
+                
+                val db = UsuariosDB(this)
+                val resultado = db.insertar(nuevoUsuario)
 
-            val fotoBase64 = imagenToBase64()
-
-            val usuarioEditado = Usuario(id, nombre, email, telefono, edad, fotoBase64)
-
-            actualizarEnBaseDeDatos(usuarioEditado)
-        }
-
-        // Eliminar
-        btnDelete.setOnClickListener {
-            AlertDialog.Builder(this)
-                .setTitle("Eliminar usuario")
-                .setMessage("¿Estás seguro de que deseas eliminar este usuario?")
-                .setPositiveButton("Eliminar") { _, _ ->
-                    val exito = usuariosDB.eliminar(idUsuario)
-                    if (exito) {
-                        Toast.makeText(this, "Usuario eliminado", Toast.LENGTH_SHORT).show()
-                        finish()
-                    } else {
-                        Toast.makeText(this, "Error al eliminar usuario", Toast.LENGTH_SHORT).show()
-                    }
+                if (resultado > 0) {
+                    Toast.makeText(this, "Usuario registrado con éxito", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    Toast.makeText(this, "Error al guardar el usuario", Toast.LENGTH_SHORT).show()
                 }
-                .setNegativeButton("Cancelar", null)
-                .show()
+            }
         }
+    }
+
+    private fun configurarFormatoTelefono() {
+        etTelefono.addTextChangedListener(object : TextWatcher {
+            private var isUpdating = false
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                if (isUpdating) return
+                val text = s.toString().replace("-", "")
+                if (text.length >= 4) {
+                    isUpdating = true
+                    val formatted = text.substring(0, 4) + "-" + text.substring(4, Math.min(text.length, 8))
+                    etTelefono.setText(formatted)
+                    etTelefono.setSelection(formatted.length)
+                    isUpdating = false
+                }
+            }
+        })
     }
 
     private fun validarCampos(): Boolean {
@@ -182,15 +176,16 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         }
 
         val email = etEmail.text.toString().trim()
-        if (email.isNotEmpty() && email != "N/A" && !email.contains("@")) {
-            tilEmail.error = "Correo inválido"
+        if (email.isNotEmpty() && !email.contains("@")) {
+            tilEmail.error = "Correo inválido (debe contener @)"
             esValido = false
         } else {
             tilEmail.error = null
         }
 
         val telefono = etTelefono.text.toString().trim()
-        if (telefono.isNotEmpty() && telefono != "N/A" && !Regex("^\\d{4}-\\d{4}$").matches(telefono)) {
+        val regexTelefono = Regex("^\\d{4}-\\d{4}$")
+        if (telefono.isNotEmpty() && !regexTelefono.matches(telefono)) {
             tilTelefono.error = "Formato inválido (####-####)"
             esValido = false
         } else {
@@ -198,46 +193,6 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         }
 
         return esValido
-    }
-
-    private fun cargarDatosUsuario() {
-        val usuario = usuariosDB.consultar(idUsuario)
-        if (usuario != null) {
-            etId.setText(usuario.id.toString())
-            etNombre.setText(usuario.nombre)
-            etEdad.setText(usuario.edad.toString())
-            etEmail.setText(usuario.correo)
-            etTelefono.setText(usuario.telefono)
-
-            if (!usuario.fotoBase64.isNullOrEmpty()) {
-                try {
-                    val imageBytes = Base64.decode(usuario.fotoBase64, Base64.DEFAULT)
-                    val decodedImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-                    imgAvatar.setImageBitmap(decodedImage)
-                    imgAvatar.setPadding(0, 0, 0, 0)
-                    imgAvatar.scaleType = ImageView.ScaleType.CENTER_CROP
-                } catch (e: Exception) {
-                    imgAvatar.setImageResource(android.R.drawable.sym_def_app_icon)
-                    imgAvatar.setPadding(6, 6, 6, 6)
-                }
-            } else {
-                imgAvatar.setImageResource(android.R.drawable.sym_def_app_icon)
-                imgAvatar.setPadding(6, 6, 6, 6)
-            }
-        } else {
-            Toast.makeText(this, "No se pudo cargar la información del usuario", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-    }
-
-    private fun actualizarEnBaseDeDatos(usuario: Usuario) {
-        val exito = usuariosDB.actualizar(usuario)
-        if (exito) {
-            Toast.makeText(this, "Usuario '${usuario.nombre}' actualizado con éxito", Toast.LENGTH_SHORT).show()
-            finish()
-        } else {
-            Toast.makeText(this, "Error al actualizar el usuario", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun imagenToBase64(): String {
@@ -277,4 +232,17 @@ class DetalleUsuarioActivity : AppCompatActivity() {
         cameraLauncher.launch(intent)
     }
 
+    private fun limpiarCampos() {
+        etNombre.setText("")
+        etEdad.setText("")
+        etEmail.setText("")
+        etTelefono.setText("")
+        tilNombre.error = null
+        tilEdad.error = null
+        tilEmail.error = null
+        tilTelefono.error = null
+        imgAvatar.setImageResource(android.R.drawable.ic_menu_myplaces)
+        imgAvatar.setPadding(10, 10, 10, 10)
+        imgAvatar.scaleType = ImageView.ScaleType.CENTER_CROP
+    }
 }

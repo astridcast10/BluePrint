@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.uth.blueprint.R
+import com.uth.gestionusuarios.BD.UsuariosDB
 import com.uth.gestionusuarios.adapters.UsuarioAdapter
 import com.uth.gestionusuarios.models.Usuario
 
@@ -35,36 +36,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fab: FloatingActionButton
 
     private lateinit var adapter: UsuarioAdapter
+    private lateinit var usuariosDB: UsuariosDB
 
     private var textoBusqueda = ""
 
-    private val usuarios = mutableListOf(
-
-        Usuario(
-            1,
-            "Ana Pérez",
-            "ana@gmail.com",
-            "9999-1111",
-            20
-        ),
-
-        Usuario(
-            2,
-            "Juan López",
-            "juan@gmail.com",
-            "9999-2222",
-            25
-        ),
-
-        Usuario(
-            3,
-            "Carlos Torres",
-            null,
-            null,
-            30
-        )
-
-    )
+    private var usuarios = listOf<Usuario>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -73,6 +49,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(
             R.layout.activity_main
         )
+
+        usuariosDB = UsuariosDB(this)
 
         inicializar()
 
@@ -166,13 +144,8 @@ class MainActivity : AppCompatActivity() {
             val intent =
                 Intent(
                     this,
-                    DetalleUsuarioActivity::class.java
+                    GuardarUsuarioActivity::class.java
                 )
-
-            intent.putExtra(
-                EXTRA_MODO,
-                MODO_CREAR
-            )
 
             startActivity(intent)
 
@@ -224,6 +197,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun cargarUsuarios() {
+
+        usuarios = usuariosDB.listar()
 
         val lista =
 
